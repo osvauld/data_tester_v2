@@ -1,1 +1,7 @@
-API_BASE_URL = "http://0.0.0.0:8000"
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+
+API_BASE_URL = os.getenv("API_BASE_URL")

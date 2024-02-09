@@ -1,4 +1,4 @@
-from scenario.user_scenario import create_user_scenario
+from tests.user_tests import create_user_scenario
 
 
 def main():

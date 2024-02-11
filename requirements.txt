@@ -1,4 +1,5 @@
+cryptography==42.0.2
 Faker==22.7.0
-Requests==2.31.0
-black==24.1.1
+PyJWT==2.8.0
 python-dotenv==1.0.1
+Requests==2.31.0

@@ -5,7 +5,6 @@ import settings
 
 def create_challenge(publicKey):
     api_url = f"{settings.API_BASE_URL}/user/challenge"
-
     response = requests.post(api_url, json={"publicKey": publicKey})
     response.raise_for_status()
 
@@ -13,8 +12,6 @@ def create_challenge(publicKey):
 
 def verify_user(signedChallenge, publicKey):
     api_url = f"{settings.API_BASE_URL}/user/verify"
-
-    response = requests.post(api_url, json={"publicKey": publicKey, "signature": signedChallenge})
+    response = requests.post(api_url, json={ "signature": signedChallenge,"publicKey": publicKey})
     response.raise_for_status()
-
     return response.json()

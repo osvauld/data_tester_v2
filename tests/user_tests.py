@@ -24,11 +24,3 @@ class TestUserLogin(unittest.TestCase):
 
         login(user)
         self.assertTrue(user.token)
-
-    def test_create_folder(self):
-
-        user, temp_password = create_random_user()
-        user, response_bool = register_user(user, temp_password)
-        login(user)
-
-        self.assertTrue(user.token)

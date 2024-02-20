@@ -5,12 +5,12 @@ from cryptography.hazmat.primitives.asymmetric import ec, rsa
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
 
+
 import jwt
 from jwt.exceptions import DecodeError, ExpiredSignatureError
 
 
 def remove_pem_header(pem_content):
-
     lines = pem_content.splitlines()
 
     # Remove lines that are headers or footers
@@ -24,6 +24,21 @@ def remove_pem_header(pem_content):
     stripped_key = "".join(stripped_lines)
 
     return stripped_key
+
+
+def add_public_key_header(key):
+    public_key_header = f"-----BEGIN PUBLIC KEY-----\n"
+    public_key_footer = f"\n-----END PUBLIC KEY-----\n"
+
+    return f"{public_key_header}{key}{public_key_footer}"
+
+
+def add_rsa_private_key_header(rsa_key):
+
+    private_key_header = f"-----BEGIN PRIVATE KEY-----\n"
+    private_key_footer = f"\n-----END RSA PRIVATE KEY-----\n"
+
+    return f"{private_key_header}{rsa_key}{private_key_footer}"
 
 
 def generate_ecc_key_pair():
@@ -106,3 +121,10 @@ def is_valid_jwt(token, secret_key):
     except (DecodeError, ExpiredSignatureError):
         # If there's a decode error or the token is expired, it's not a valid JWT
         return False
+
+
+def encrypt_text(text: str, public_key: str):
+
+    # TODO: add encryption
+
+    return text

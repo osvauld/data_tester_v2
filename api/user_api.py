@@ -25,7 +25,6 @@ def create_user_api(name, username, temp_password):
 
 
 def register_user_api(user, temp_password):
-
     api_url = f"{settings.API_BASE_URL}/user/register"
 
     payload = {

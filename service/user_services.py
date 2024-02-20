@@ -18,7 +18,6 @@ fake = Faker()
 
 
 def create_random_user():
-
     name = fake.name()
     username = fake.user_name()
     password = fake.password()
@@ -38,7 +37,6 @@ def create_random_user():
 
 
 def register_user(user, temp_password):
-
     ecc_private_key, ecc_public_key = generate_ecc_key_pair()
     rsa_private_key, rsa_public_key = generate_rsa_key_pair()
 
@@ -52,7 +50,6 @@ def register_user(user, temp_password):
 
 
 def login(user):
-
     pem_removed_ecc_public_key = remove_pem_header(user.ecc_public_key)
 
     response = get_challenge_api(pem_removed_ecc_public_key)
@@ -64,3 +61,10 @@ def login(user):
     token = response["data"]["token"]
 
     user.token = token
+
+
+def create_and_login_random_user():
+    user, temp_password = create_random_user()
+    user, token = register_user(user, temp_password)
+    login(user)
+    return user

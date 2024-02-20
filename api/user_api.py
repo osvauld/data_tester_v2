@@ -25,7 +25,6 @@ def create_user_api(name, username, temp_password):
 
 
 def register_user_api(user, temp_password):
-
     api_url = f"{settings.API_BASE_URL}/user/register"
 
     payload = {
@@ -75,14 +74,16 @@ def verify_challenge_api(ecc_public_key, signature):
         raise ValueError("API response is not successful")
 
     return response.json()
+
+
 def fetch_all_users_api(token):
-    api_url =f"{settings.API_BASE_URL}/users"
+    api_url = f"{settings.API_BASE_URL}/users"
 
     headers = {
         "Authorization": f"Bearer {token}",
     }
 
-    response = requests.get(api_url,headers=headers)
+    response = requests.get(api_url, headers=headers)
     response.raise_for_status()
 
     response_json = response.json()

@@ -5,7 +5,6 @@ class User:
         user_id=None,
         name=None,
     ):
-
         self.user_id = user_id
         self.name = name
         self.username = username

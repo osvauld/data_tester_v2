@@ -75,3 +75,18 @@ def verify_challenge_api(ecc_public_key, signature):
         raise ValueError("API response is not successful")
 
     return response.json()
+def fetch_all_users_api(token):
+    api_url =f"{settings.API_BASE_URL}/users"
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+    }
+
+    response = requests.get(api_url,headers=headers)
+    response.raise_for_status()
+
+    response_json = response.json()
+    if not check_api_success(response_json):
+        raise ValueError("API response is not successful")
+
+    return response.json()

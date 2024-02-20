@@ -1,4 +1,4 @@
-from service.user_services import create_random_user, register_user, login
+from service.user_services import create_random_user, register_user, login, fetch_all_users
 import unittest
 from utils.test_utils import is_valid_uuid
 
@@ -32,3 +32,10 @@ class TestUserLogin(unittest.TestCase):
         login(user)
 
         self.assertTrue(user.token)
+    def test_fetch_all_users(self):
+        user, temp_password = create_random_user()
+        user, response_bool = register_user(user, temp_password)
+        login(user)
+        result=fetch_all_users(user)
+        self.assertTrue(user.token)
+

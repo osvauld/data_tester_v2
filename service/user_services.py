@@ -5,6 +5,7 @@ from api.user_api import (
     register_user_api,
     get_challenge_api,
     verify_challenge_api,
+    fetch_all_users_api,
 )
 from model.user import User
 from utils.crypto import (
@@ -64,3 +65,9 @@ def login(user):
     token = response["data"]["token"]
 
     user.token = token
+
+def fetch_all_users(user):
+    token = user.token
+    response = fetch_all_users_api(token)
+    return response["data"]
+

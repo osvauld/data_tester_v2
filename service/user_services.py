@@ -5,13 +5,12 @@ from api.user_api import (
     register_user_api,
     get_challenge_api,
     verify_challenge_api,
+    temp_login_user_api,
 )
 from model.user import User
 from utils.crypto import (
-    generate_ecc_key_pair,
-    generate_rsa_key_pair,
-    sign_message_ecdsa,
-    remove_pem_header,
+    generate_device_key,
+    sign_message,
 )
 
 fake = Faker()
@@ -36,28 +35,34 @@ def create_random_user():
     return user, password
 
 
-def register_user(user, temp_password):
-    ecc_private_key, ecc_public_key = generate_ecc_key_pair()
-    rsa_private_key, rsa_public_key = generate_rsa_key_pair()
+def temp_login_user(user, temp_password):
+    response = temp_login_user_api(user.username, temp_password)
+    return response["data"]["challenge"]
 
-    user.rsa_public_key = rsa_public_key
-    user.rsa_private_key = rsa_private_key
-    user.ecc_public_key = ecc_public_key
-    user.ecc_private_key = ecc_private_key
 
-    response = register_user_api(user, temp_password=temp_password)
+def register_user(user, registration_challenge):
+
+    device_public_key, device_private_key = generate_device_key()
+
+    user.device_public_key = device_public_key
+    user.device_key_fingerprint = device_private_key
+    user.encryption_public_key = "encryption public key"
+    user.encryption_private_key = "encryption private key"
+
+    challenge_signature = sign_message(device_private_key, registration_challenge)
+
+    response = register_user_api(user, signature=challenge_signature)
     return user, response["data"]
 
 
 def login(user):
-    pem_removed_ecc_public_key = remove_pem_header(user.ecc_public_key)
 
-    response = get_challenge_api(pem_removed_ecc_public_key)
+    response = get_challenge_api(user.device_public_key)
     challenge = response["data"]["challenge"]
 
-    sign = sign_message_ecdsa(user.ecc_private_key, challenge)
+    sign = sign_message(user.device_key_fingerprint, challenge)
 
-    response = verify_challenge_api(pem_removed_ecc_public_key, sign)
+    response = verify_challenge_api(user.device_public_key, sign)
     token = response["data"]["token"]
 
     user.token = token
@@ -65,6 +70,7 @@ def login(user):
 
 def create_and_login_random_user():
     user, temp_password = create_random_user()
-    user, token = register_user(user, temp_password)
+    registration_challenge = temp_login_user(user, temp_password)
+    user, token = register_user(user, registration_challenge)
     login(user)
     return user

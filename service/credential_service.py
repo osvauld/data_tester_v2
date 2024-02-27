@@ -3,7 +3,7 @@ import uuid
 from model.user import User
 from model.credential import Field, UserFields, Credential
 
-from utils.crypto import add_public_key_header, encrypt_text
+from utils.crypto import encrypt_text
 
 from api.credential_api import (
     create_credential_api,
@@ -15,6 +15,10 @@ from service.folder_service import get_users_with_folder_access
 
 from factories.credential import CredentialFactory, UserFieldsFactory, FieldFactory
 from copy import deepcopy
+
+import faker
+
+fake = faker.Faker()
 
 
 def encrypt_fields(fields: list[Field], public_key: str) -> list[Field]:
@@ -40,7 +44,7 @@ def create_random_credential(folder_id: uuid.UUID, user: User) -> Credential:
     for folder_user in folder_users:
 
         user_encrypted_fields = encrypt_fields(
-            original_fields, add_public_key_header(folder_user["publicKey"])
+            original_fields, folder_user["publicKey"]
         )
         user_encrypted_fields = UserFields(user=user, fields=user_encrypted_fields)
         encrypted_user_fields.append(user_encrypted_fields)
@@ -89,3 +93,26 @@ def get_credential_fields_by_ids(credential_ids: list[int], user: User):
     return get_credential_fields_by_ids_api(credential_ids=credential_ids, user=user)[
         "data"
     ]
+
+
+# def edit_credential(updated_details: dict, edit_fields: list[Field], new_fields: list[Field], user: User) -> Credential:
+#
+#     payload = {
+#         "name": updated_details['name'],
+#         "description": updated_details['description'],
+#         "credentialType": updated_details['credentialType'],
+#     }
+#
+#
+#
+#     updated_details = get_credential_data_with_sensitive_fields(credential_id=credential.credential_id, user=user)
+#
+#
+#
+#     credential.name = fake.name()
+#     credential.description = fake.text()
+#     credential.credential_type = 'other' if credential.credential_type == 'login' else 'login'
+#     credential.description = updated_details["description"]
+#
+#
+#     return credential

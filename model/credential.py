@@ -21,7 +21,7 @@ class Field:
 class UserFields:
     def __init__(self, user: User, fields: list[Field]):
         self.user = user
-        self.field = fields
+        self.fields = fields
 
 
 class Credential:

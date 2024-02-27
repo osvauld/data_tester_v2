@@ -1,116 +1,74 @@
-import base64
-
-from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import ec, rsa
-from cryptography.hazmat.primitives import serialization, hashes
-from cryptography.hazmat.primitives.asymmetric.utils import decode_dss_signature
-
+import tempfile
+import shutil
 
 import jwt
 from jwt.exceptions import DecodeError, ExpiredSignatureError
 
+import gnupg
+import base64
 
-def remove_pem_header(pem_content):
-    lines = pem_content.splitlines()
-
-    # Remove lines that are headers or footers
-    stripped_lines = [
-        line
-        for line in lines
-        if not (line.startswith("-----BEGIN ") or line.startswith("-----END "))
-    ]
-
-    # Join the remaining lines back into a single string
-    stripped_key = "".join(stripped_lines)
-
-    return stripped_key
+GPG_PASSPHRASE = "passphrase"
 
 
-def add_public_key_header(key):
-    public_key_header = f"-----BEGIN PUBLIC KEY-----\n"
-    public_key_footer = f"\n-----END PUBLIC KEY-----\n"
+def generate_device_key():
 
-    return f"{public_key_header}{key}{public_key_footer}"
+    temp_dir = tempfile.mkdtemp()
+    gpg = gnupg.GPG(gnupghome=temp_dir)
+
+    try:
+        input_data = gpg.gen_key_input(
+            name_email="user@email.com",
+            passphrase=GPG_PASSPHRASE,
+        )
+        key = gpg.gen_key(input_data)
+
+        armored_public_key = gpg.export_keys(key.fingerprint)
+        armored_public_key_b64 = base64.b64encode(
+            armored_public_key.encode("utf-8")
+        ).decode("utf-8")
+
+        armored_private_key = gpg.export_keys(
+            key.fingerprint, secret=True, passphrase=GPG_PASSPHRASE
+        )
+        armored_private_key_b64 = base64.b64encode(
+            armored_private_key.encode("utf-8")
+        ).decode("utf-8")
+
+        return armored_public_key_b64, armored_private_key_b64
+
+    finally:
+        shutil.rmtree(temp_dir)
 
 
-def add_rsa_private_key_header(rsa_key):
+def sign_message(armored_private_key, message):
 
-    private_key_header = f"-----BEGIN PRIVATE KEY-----\n"
-    private_key_footer = f"\n-----END RSA PRIVATE KEY-----\n"
+    temp_dir = tempfile.mkdtemp()
+    gpg = gnupg.GPG(gnupghome=temp_dir)
 
-    return f"{private_key_header}{rsa_key}{private_key_footer}"
-
-
-def generate_ecc_key_pair():
-    # Generate an ECC private key for use in key exchange.
-    private_key = ec.generate_private_key(ec.SECP256R1(), default_backend())
-
-    # Generate the public key for the private key.
-    public_key = private_key.public_key()
-
-    # Serialize the private key to PEM format
-    private_key_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.PKCS8,
-        encryption_algorithm=serialization.NoEncryption(),
+    armored_private_key_decoded = base64.b64decode(
+        armored_private_key.encode("utf-8")
     ).decode("utf-8")
 
-    # Serialize the public key to PEM format
-    public_key_pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    ).decode("utf-8")
+    try:
+        import_result = gpg.import_keys(armored_private_key_decoded)
+        if not import_result.count:
+            raise ValueError("Failed to import the private key.")
 
-    return private_key_pem, public_key_pem
+        signed_message = gpg.sign(
+            message,
+            passphrase=GPG_PASSPHRASE,
+            keyid=import_result.fingerprints[0],
+            detach=True,
+        )
+        armored_signature_b64 = base64.b64encode(
+            str(signed_message).encode("utf-8")
+        ).decode("utf-8")
 
+        shutil.rmtree(temp_dir)
 
-def generate_rsa_key_pair(key_size=2048):
-    # Generate an RSA private key
-    private_key = rsa.generate_private_key(
-        public_exponent=65537, key_size=key_size, backend=default_backend()
-    )
+    finally:
 
-    # Generate the public key for the private key
-    public_key = private_key.public_key()
-
-    # Serialize the private key to PEM format
-    private_key_pem = private_key.private_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PrivateFormat.TraditionalOpenSSL,
-        encryption_algorithm=serialization.NoEncryption(),
-    ).decode("utf-8")
-
-    # Serialize the public key to PEM format
-    public_key_pem = public_key.public_bytes(
-        encoding=serialization.Encoding.PEM,
-        format=serialization.PublicFormat.SubjectPublicKeyInfo,
-    ).decode("utf-8")
-
-    return private_key_pem, public_key_pem
-
-
-def sign_message_ecdsa(private_key_pem, message):
-    # Load the private key from the PEM file
-    private_key = serialization.load_pem_private_key(
-        private_key_pem.encode("utf-8"), password=None, backend=default_backend()
-    )
-
-    # Sign the message using the private key
-    signature = private_key.sign(message.encode("utf-8"), ec.ECDSA(hashes.SHA256()))
-
-    # Decode the signature from DER to (r, s)
-    r, s = decode_dss_signature(signature)
-
-    # Convert r and s into 32-byte components
-    r_bytes = r.to_bytes(32, byteorder="big")
-    s_bytes = s.to_bytes(32, byteorder="big")
-
-    # Concatenate r_bytes and s_bytes to get the 64-byte signature
-    signature_64_bytes = r_bytes + s_bytes
-
-    signature_base64 = base64.b64encode(signature_64_bytes).decode("utf-8")
-
-    return signature_base64
+        return armored_signature_b64
 
 
 def is_valid_jwt(token, secret_key):

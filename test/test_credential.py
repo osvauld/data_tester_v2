@@ -2,8 +2,13 @@ import unittest
 
 from factories.credential import FieldFactory
 from service.folder_service import create_random_folder
-from service.user_services import create_random_user, register_user, login
-from service.credential_service import create_random_credential, get_credential_data
+from service.user_services import create_and_login_random_user
+from service.credential_service import (
+    create_random_credential,
+    get_credential_data,
+    get_credential_data_with_sensitive_fields,
+)
+from service.share_credential_service import share_credentials_with_user
 from utils.test_utils import is_valid_uuid, is_valid_timestamp
 
 from faker import Faker
@@ -13,9 +18,7 @@ fake = Faker()
 
 class TestCredential(unittest.TestCase):
     def setUp(self):
-        self.user, temp_password = create_random_user()
-        register_user(self.user, temp_password)
-        login(self.user)
+        self.user = create_and_login_random_user()
 
     def test_create_credential(self):
 
@@ -61,7 +64,7 @@ class TestCredential(unittest.TestCase):
             for field in fetched_credential["fields"]
         ]
 
-        for field in created_credential.user_fields[0].field:
+        for field in created_credential.user_fields[0].fields:
             if field.field_type == "sensitive":
                 continue
 
@@ -71,3 +74,52 @@ class TestCredential(unittest.TestCase):
                 "fieldValue": field.field_value,
             }
             self.assertIn(expected_dict, fetched_field_values)
+
+
+#
+# class TestEditCredential(unittest.TestCase):
+#     def setUp(self):
+#         self.user = create_and_login_random_user()
+#         self.another_user = create_and_login_random_user()
+#
+#     def test_edit_credential(self):
+#         folder_id = create_random_folder(self.user)
+#
+#         created_credential = create_random_credential(
+#             folder_id=folder_id, user=self.user
+#         )
+#
+#         share_credentials_with_user(credential_ids=[created_credential.credential_id], share_to_user=self.another_user, share_from_user=self.user)
+#
+#         update_credential_name = fake.name()
+#         update_credential_description = fake.text()
+#         update_credential_type = "other" if created_credential.credential_type == "login" else "login"
+#
+#         all_fields = created_credential.user_fields[0].fields
+#
+#         edit_fields = all_fields[:2]
+#
+#         for field in edit_fields:
+#             field.field_name = fake.name()
+#             field.field_value = fake.text()
+#             field.field_type = "other"
+#
+#         new_fields = [FieldFactory() for _ in range(2)]
+#
+#         updated_credential = edit_credential(
+#             updated_details={
+#                 "name": update_credential_name,
+#                 "description": update_credential_description,
+#                 "credentialType": update_credential_type,
+#             },
+#             edit_fields=edit_fields,
+#             new_fields=new_fields,
+#             user=self.user,
+#         )
+#
+#
+#
+#
+#
+#
+#         print("hai")

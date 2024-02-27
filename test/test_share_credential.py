@@ -67,7 +67,7 @@ class TestShareCredential(unittest.TestCase):
                 for field in fetched_credential["fields"]
             ]
 
-            for field in credential.user_fields[0].field:
+            for field in credential.user_fields[0].fields:
 
                 expected_dict = {
                     "fieldType": field.field_type,

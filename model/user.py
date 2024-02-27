@@ -9,11 +9,11 @@ class User:
         self.name = name
         self.username = username
 
-        self.ecc_private_key = None
-        self.ecc_public_key = None
+        self.device_public_key = None
+        self.device_private_key = None
 
-        self.rsa_private_key = None
-        self.rsa_public_key = None
+        self.encryption_private_key = None
+        self.encryption_public_key = None
 
         self.token = None
 

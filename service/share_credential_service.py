@@ -35,7 +35,7 @@ def share_credentials_with_user(
             encrypted_field = {
                 "fieldId": field["fieldId"],
                 "fieldValue": encrypt_text(
-                    field["fieldValue"], share_to_user.rsa_public_key
+                    field["fieldValue"], share_to_user.encryption_public_key
                 ),
             }
             encrypted_fields.append(encrypted_field)

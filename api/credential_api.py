@@ -28,7 +28,7 @@ def create_credential_api(credential: Credential, user: User):
                         "fieldValue": field.field_value,
                         "fieldType": field.field_type,
                     }
-                    for field in user_field.field
+                    for field in user_field.fields
                 ],
             }
         )

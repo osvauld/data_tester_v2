@@ -40,3 +40,20 @@ def get_users_with_folder_access_api(folder_id, user):
         raise ValueError("API response is not successful")
 
     return response.json()
+
+
+def fetch_all_folders_api(user):
+    api_url = f"{settings.API_BASE_URL}/folders"
+
+    headers = {
+        "Authorization": f"Bearer {user.token}",
+    }
+
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()
+
+    response_json = response.json()
+    if not check_api_success(response_json):
+        raise ValueError("API response is not successful")
+
+    return response.json()

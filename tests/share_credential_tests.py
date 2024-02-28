@@ -75,3 +75,14 @@ class TestShareCredential(unittest.TestCase):
                     "fieldValue": field.field_value,
                 }
                 self.assertIn(expected_dict, fetched_field_values)
+
+    def setUp(self):
+
+        self.share_from_user = create_and_login_random_user()
+        self.share_to_group = create_and_login_random_user()
+
+        self.folder_id = create_random_folder(self.share_from_user)
+
+    def test_share_credentials_to_groups(self):
+        credentials = []
+        for _ in range(3)

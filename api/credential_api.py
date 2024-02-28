@@ -97,3 +97,20 @@ def get_sensitive_fields_by_id_api(credential_id: str, user: User):
         raise ValueError("API response is not successful")
 
     return response.json()
+
+
+def get_credentials_by_folder_api(folder_id, user):
+    api_url = f"{settings.API_BASE_URL}/folder/{folder_id}/credential"
+
+    headers = {
+        "Authorization": f"Bearer{user.token}",
+    }
+
+    response = requests.get(api_url, headers=headers)
+    response.raise_for_status()
+
+    response_json = response.json()
+    if not check_api_success(response_json):
+        raise ValueError("API response is not successful")
+
+    return response.json()

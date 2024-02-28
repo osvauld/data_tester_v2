@@ -10,6 +10,7 @@ from api.credential_api import (
     get_credential_data_api,
     get_credential_fields_by_ids_api,
     get_sensitive_fields_by_id_api,
+    get_credentials_by_folder_api,
 )
 from service.folder_service import get_users_with_folder_access
 
@@ -26,7 +27,6 @@ def encrypt_fields(fields: list[Field], public_key: str) -> list[Field]:
 
 
 def create_random_credential(folder_id: uuid.UUID, user: User) -> Credential:
-
     original_fields = [FieldFactory() for _ in range(5)]
 
     user_fields = UserFieldsFactory(user=user)
@@ -38,7 +38,6 @@ def create_random_credential(folder_id: uuid.UUID, user: User) -> Credential:
 
     encrypted_user_fields = []
     for folder_user in folder_users:
-
         user_encrypted_fields = encrypt_fields(
             original_fields, add_public_key_header(folder_user["publicKey"])
         )
@@ -58,7 +57,6 @@ def create_random_credential(folder_id: uuid.UUID, user: User) -> Credential:
 
 
 def get_credential_data(credential_id: uuid.UUID, user: User):
-
     response = get_credential_data_api(
         credential_id=credential_id,
         user=user,
@@ -68,7 +66,6 @@ def get_credential_data(credential_id: uuid.UUID, user: User):
 
 
 def get_credential_data_with_sensitive_fields(credential_id: uuid.UUID, user: User):
-
     credential_data = get_credential_data_api(
         credential_id=credential_id,
         user=user,
@@ -85,7 +82,11 @@ def get_credential_data_with_sensitive_fields(credential_id: uuid.UUID, user: Us
 
 
 def get_credential_fields_by_ids(credential_ids: list[int], user: User):
-
     return get_credential_fields_by_ids_api(credential_ids=credential_ids, user=user)[
         "data"
     ]
+
+
+def get_credentials_by_folder_service(folder_id: uuid.UUID, user: User):
+    response = get_credentials_by_folder_api(folder_id=folder_id, user=user)
+    return response["data"]

@@ -7,6 +7,7 @@ from service.credential_service import (
     create_random_credential,
     get_credential_data,
     get_credential_data_with_sensitive_fields,
+    edit_credential,
 )
 from service.share_credential_service import share_credentials_with_user
 from utils.test_utils import is_valid_uuid, is_valid_timestamp
@@ -76,50 +77,169 @@ class TestCredential(unittest.TestCase):
             self.assertIn(expected_dict, fetched_field_values)
 
 
-#
-# class TestEditCredential(unittest.TestCase):
-#     def setUp(self):
-#         self.user = create_and_login_random_user()
-#         self.another_user = create_and_login_random_user()
-#
-#     def test_edit_credential(self):
-#         folder_id = create_random_folder(self.user)
-#
-#         created_credential = create_random_credential(
-#             folder_id=folder_id, user=self.user
-#         )
-#
-#         share_credentials_with_user(credential_ids=[created_credential.credential_id], share_to_user=self.another_user, share_from_user=self.user)
-#
-#         update_credential_name = fake.name()
-#         update_credential_description = fake.text()
-#         update_credential_type = "other" if created_credential.credential_type == "login" else "login"
-#
-#         all_fields = created_credential.user_fields[0].fields
-#
-#         edit_fields = all_fields[:2]
-#
-#         for field in edit_fields:
-#             field.field_name = fake.name()
-#             field.field_value = fake.text()
-#             field.field_type = "other"
-#
-#         new_fields = [FieldFactory() for _ in range(2)]
-#
-#         updated_credential = edit_credential(
-#             updated_details={
-#                 "name": update_credential_name,
-#                 "description": update_credential_description,
-#                 "credentialType": update_credential_type,
-#             },
-#             edit_fields=edit_fields,
-#             new_fields=new_fields,
-#             user=self.user,
-#         )
-#
-#
-#
-#
-#
-#
-#         print("hai")
+class TestEditCredential(unittest.TestCase):
+    def setUp(self):
+        self.user = create_and_login_random_user()
+        self.another_user = create_and_login_random_user()
+
+        folder_id = create_random_folder(self.user)
+
+        self.created_credential = create_random_credential(
+            folder_id=folder_id, user=self.user
+        )
+
+        share_credentials_with_user(
+            credential_ids=[self.created_credential.credential_id],
+            share_to_user=self.another_user,
+            share_from_user=self.user,
+        )
+
+    def test_edit_credential_edit_details(self):
+
+        update_credential_name = fake.name()
+        update_credential_description = fake.text()
+        update_credential_type = (
+            "other" if self.created_credential.credential_type == "login" else "login"
+        )
+
+        response = edit_credential(
+            credential_id=self.created_credential.credential_id,
+            updated_details={
+                "name": update_credential_name,
+                "description": update_credential_description,
+                "credentialType": update_credential_type,
+            },
+            fields=[],
+            caller=self.user,
+        )
+
+        self.assertTrue(response["success"])
+
+        # Check values for the user who shared the credentials
+        fetched_credential_details = get_credential_data(
+            credential_id=self.created_credential.credential_id, user=self.user
+        )
+
+        self.assertEqual(fetched_credential_details["name"], update_credential_name)
+        self.assertEqual(
+            fetched_credential_details["description"], update_credential_description
+        )
+        self.assertEqual(
+            fetched_credential_details["credentialType"], update_credential_type
+        )
+
+        # Check values for shared used
+        fetched_credential_details_another_user = get_credential_data(
+            credential_id=self.created_credential.credential_id, user=self.another_user
+        )
+
+        self.assertEqual(
+            fetched_credential_details_another_user["name"], update_credential_name
+        )
+        self.assertEqual(
+            fetched_credential_details_another_user["description"],
+            update_credential_description,
+        )
+        self.assertEqual(
+            fetched_credential_details_another_user["credentialType"],
+            update_credential_type,
+        )
+
+    def test_edit_credential_edit_fields(self):
+
+        all_fields = (
+            get_credential_data_with_sensitive_fields(
+                credential_id=self.created_credential.credential_id, user=self.user
+            )
+            .user_fields[0]
+            .fields
+        )
+
+        edit_fields = all_fields[:2]
+
+        for field in edit_fields:
+            field.field_name = fake.word()
+            field.field_value = fake.password()
+            field.field_type = "other"
+
+        response = edit_credential(
+            credential_id=self.created_credential.credential_id,
+            updated_details={
+                "name": self.created_credential.name,
+                "description": self.created_credential.description,
+                "credentialType": self.created_credential.credential_type,
+            },
+            fields=all_fields,
+            caller=self.user,
+        )
+
+        self.assertTrue(response["success"])
+
+        # Check values for the user who shared the credentials
+        fetched_fields_for_user = (
+            get_credential_data_with_sensitive_fields(
+                credential_id=self.created_credential.credential_id, user=self.user
+            )
+            .user_fields[0]
+            .fields
+        )
+
+        self.assertCountEqual(fetched_fields_for_user, all_fields)
+
+        # Check values for shared used
+        fetched_fields_for_another_user = (
+            get_credential_data_with_sensitive_fields(
+                credential_id=self.created_credential.credential_id,
+                user=self.another_user,
+            )
+            .user_fields[0]
+            .fields
+        )
+
+        self.assertCountEqual(fetched_fields_for_another_user, all_fields)
+
+    def test_edit_credential_add_fields(self):
+
+        all_fields = (
+            get_credential_data_with_sensitive_fields(
+                credential_id=self.created_credential.credential_id, user=self.user
+            )
+            .user_fields[0]
+            .fields
+        )
+
+        new_fields = [FieldFactory() for _ in range(3)]
+        all_fields = all_fields + new_fields
+        response = edit_credential(
+            credential_id=self.created_credential.credential_id,
+            updated_details={
+                "name": self.created_credential.name,
+                "description": self.created_credential.description,
+                "credentialType": self.created_credential.credential_type,
+            },
+            fields=all_fields,
+            caller=self.user,
+        )
+
+        self.assertTrue(response["success"])
+
+        fetched_fields_for_user = (
+            get_credential_data_with_sensitive_fields(
+                credential_id=self.created_credential.credential_id, user=self.user
+            )
+            .user_fields[0]
+            .fields
+        )
+
+        self.assertCountEqual(fetched_fields_for_user, all_fields)
+
+        fetched_fields_for_another_user = (
+            get_credential_data_with_sensitive_fields(
+                credential_id=self.created_credential.credential_id,
+                user=self.another_user,
+            )
+            .user_fields[0]
+            .fields
+        )
+
+        self.assertCountEqual(fetched_fields_for_another_user, all_fields)

@@ -36,3 +36,4 @@ class CredentialFactory(factory.Factory):
     description = factory.Faker("text")
     credential_type = factory.Faker("random_element", elements=["login", "other"])
     user_fields = factory.List(factory.SubFactory(UserFieldsFactory) for _ in range(3))
+    access_type = factory.Faker("random_element", elements=["owner", "write", "read"])

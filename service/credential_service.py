@@ -10,6 +10,8 @@ from api.credential_api import (
     get_credential_data_api,
     get_credential_fields_by_ids_api,
     get_sensitive_fields_by_id_api,
+    get_all_users_with_credential_access_api,
+    edit_credential_api,
 )
 from service.folder_service import get_users_with_folder_access
 
@@ -85,7 +87,20 @@ def get_credential_data_with_sensitive_fields(credential_id: uuid.UUID, user: Us
 
     credential_data["fields"].extend(sensitive_fields)
 
-    return credential_data
+    field_objs = [Field.from_dict(field) for field in credential_data["fields"]]
+
+    credential_obj = Credential(
+        name=credential_data["name"],
+        folder_id=credential_data["folderId"],
+        user=user,
+        description=credential_data["description"],
+        credential_type=credential_data["credentialType"],
+        user_fields=[UserFields(user=user, fields=field_objs)],
+        credential_id=credential_id,
+        access_type=credential_data["accessType"],
+    )
+
+    return credential_obj
 
 
 def get_credential_fields_by_ids(credential_ids: list[int], user: User):
@@ -95,24 +110,40 @@ def get_credential_fields_by_ids(credential_ids: list[int], user: User):
     ]
 
 
-# def edit_credential(updated_details: dict, edit_fields: list[Field], new_fields: list[Field], user: User) -> Credential:
-#
-#     payload = {
-#         "name": updated_details['name'],
-#         "description": updated_details['description'],
-#         "credentialType": updated_details['credentialType'],
-#     }
-#
-#
-#
-#     updated_details = get_credential_data_with_sensitive_fields(credential_id=credential.credential_id, user=user)
-#
-#
-#
-#     credential.name = fake.name()
-#     credential.description = fake.text()
-#     credential.credential_type = 'other' if credential.credential_type == 'login' else 'login'
-#     credential.description = updated_details["description"]
-#
-#
-#     return credential
+def edit_credential(
+    credential_id: uuid.UUID,
+    updated_details: dict,
+    fields: list[Field],
+    caller: User,
+) -> Credential:
+
+    payload = {
+        "name": updated_details["name"],
+        "description": updated_details["description"],
+        "credentialType": updated_details["credentialType"],
+        "userFields": [],
+    }
+
+    all_users = get_all_users_with_credential_access_api(credential_id, caller)["data"]
+
+    for user in all_users:
+
+        new_fields_for_user = {
+            "userId": user["id"],
+            "fields": [],
+        }
+        for field in fields:
+            field = {
+                "fieldName": field.field_name,
+                "fieldValue": encrypt_text(field.field_value, user["publicKey"]),
+                "fieldType": field.field_type,
+            }
+            new_fields_for_user["fields"].append(field)
+
+        payload["userFields"].append(new_fields_for_user)
+
+    response = edit_credential_api(
+        credential_id=credential_id, payload=payload, user=caller
+    )
+
+    return response

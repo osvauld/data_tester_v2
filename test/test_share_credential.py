@@ -47,31 +47,16 @@ class TestShareCredential(unittest.TestCase):
                 credential_id=credential.credential_id, user=self.share_to_user
             )
 
+            self.assertEqual(credential.credential_id, fetched_credential.credential_id)
+            self.assertEqual(credential.folder_id, fetched_credential.folder_id)
+            self.assertEqual(credential.description, fetched_credential.description)
+            self.assertEqual(credential.name, fetched_credential.name)
             self.assertEqual(
-                credential.credential_id, fetched_credential["credentialId"]
+                credential.credential_type, fetched_credential.credential_type
             )
-            self.assertEqual(credential.folder_id, fetched_credential["folderId"])
-            self.assertEqual(credential.description, fetched_credential["description"])
-            self.assertEqual(credential.name, fetched_credential["name"])
-            self.assertEqual(
-                credential.credential_type, fetched_credential["credentialType"]
-            )
-            self.assertEqual("write", fetched_credential["accessType"])
+            self.assertEqual("write", fetched_credential.access_type)
 
-            fetched_field_values = [
-                {
-                    "fieldName": field["fieldName"],
-                    "fieldValue": field["fieldValue"],
-                    "fieldType": field["fieldType"],
-                }
-                for field in fetched_credential["fields"]
-            ]
+            expected_fields = credential.user_fields[0].fields
+            actual_fields = fetched_credential.user_fields[0].fields
 
-            for field in credential.user_fields[0].fields:
-
-                expected_dict = {
-                    "fieldType": field.field_type,
-                    "fieldName": field.field_name,
-                    "fieldValue": field.field_value,
-                }
-                self.assertIn(expected_dict, fetched_field_values)
+            self.assertCountEqual(expected_fields, actual_fields)

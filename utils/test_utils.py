@@ -7,7 +7,7 @@ from dateutil.parser import parse
 
 def is_valid_uuid(uuid_string):
     try:
-        uuid_obj = uuid.UUID(uuid_string, version=4)
+        uuid_obj = uuid.UUID(uuid_string)
     except ValueError:
         return False
 

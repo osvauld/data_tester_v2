@@ -65,42 +65,34 @@ def create_random_credential(folder_id: uuid.UUID, user: User) -> Credential:
 
 def get_credential_data(credential_id: uuid.UUID, user: User):
 
-    response = get_credential_data_api(
-        credential_id=credential_id,
-        user=user,
-    )
-
-    return response["data"]
-
-
-def get_credential_data_with_sensitive_fields(credential_id: uuid.UUID, user: User):
-
     credential_data = get_credential_data_api(
         credential_id=credential_id,
         user=user,
     )["data"]
 
-    sensitive_fields = get_sensitive_fields_by_id_api(credential_id, user)["data"]
-
-    for sensitive_field in sensitive_fields:
-        sensitive_field["fieldType"] = "sensitive"
-
-    credential_data["fields"].extend(sensitive_fields)
-
     field_objs = [Field.from_dict(field) for field in credential_data["fields"]]
 
-    credential_obj = Credential(
-        name=credential_data["name"],
-        folder_id=credential_data["folderId"],
-        user=user,
-        description=credential_data["description"],
-        credential_type=credential_data["credentialType"],
-        user_fields=[UserFields(user=user, fields=field_objs)],
-        credential_id=credential_id,
-        access_type=credential_data["accessType"],
+    credential_obj = Credential.from_dict(
+        credential_dict=credential_data, user_fields=field_objs, user=user
     )
 
     return credential_obj
+
+
+def get_credential_data_with_sensitive_fields(credential_id: uuid.UUID, user: User):
+
+    credential_data = get_credential_data(credential_id, user)
+    sensitive_fields = get_sensitive_fields_by_id_api(credential_id, user)["data"]
+
+    # add field type to sensitive fields
+    for field in sensitive_fields:
+        field["fieldType"] = "sensitive"
+
+    sensitive_field_objs = [Field.from_dict(field) for field in sensitive_fields]
+
+    credential_data.user_fields[0].fields.extend(sensitive_field_objs)
+
+    return credential_data
 
 
 def get_credential_fields_by_ids(credential_ids: list[int], user: User):

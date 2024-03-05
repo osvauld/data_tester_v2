@@ -1,4 +1,9 @@
-from api.folder_api import create_folder_api, get_users_with_folder_access_api
+from api.folder_api import (
+    create_folder_api,
+    get_users_with_folder_access_api,
+    get_credentials_fields_for_folder_api,
+    get_folder_credentials_api,
+)
 
 from faker import Faker
 
@@ -29,3 +34,14 @@ def create_random_folder(user):
     folder_id = create_folder_service(user, folder_name, description)
 
     return folder_id
+
+
+def credential_fields_for_folder_id(folder_id, user):
+    response = get_credentials_fields_for_folder_api(folder_id, user)
+
+    return response
+
+
+def get_folder_credentials(folder_id, user):
+    response = get_folder_credentials_api(folder_id, user)
+    return response["data"]

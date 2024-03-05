@@ -9,7 +9,7 @@ from service.credential_service import (
     get_credential_data_with_sensitive_fields,
     edit_credential,
 )
-from service.share_credential_service import share_credentials_with_user
+from service.share_credential_service import share_credentials_with_users
 from utils.test_utils import is_valid_uuid, is_valid_timestamp
 
 from faker import Faker
@@ -41,40 +41,27 @@ class TestCredential(unittest.TestCase):
         )
 
         self.assertEqual(
-            created_credential.credential_id, fetched_credential["credentialId"]
+            created_credential.credential_id, fetched_credential.credential_id
         )
-        self.assertEqual(created_credential.folder_id, fetched_credential["folderId"])
+        self.assertEqual(created_credential.folder_id, fetched_credential.folder_id)
+        self.assertEqual(created_credential.description, fetched_credential.description)
+        self.assertEqual(created_credential.name, fetched_credential.name)
         self.assertEqual(
-            created_credential.description, fetched_credential["description"]
+            created_credential.credential_type, fetched_credential.credential_type
         )
-        self.assertEqual(created_credential.name, fetched_credential["name"])
-        self.assertEqual(
-            created_credential.credential_type, fetched_credential["credentialType"]
-        )
-        self.assertEqual("owner", fetched_credential["accessType"])
-        self.assertEqual(self.user.user_id, fetched_credential["createdBy"])
-        self.assertTrue(is_valid_timestamp(fetched_credential["createdAt"]))
-        self.assertTrue(is_valid_timestamp(fetched_credential["updatedAt"]))
+        self.assertEqual("owner", fetched_credential.access_type)
+        self.assertEqual(self.user.user_id, fetched_credential.created_by)
+        self.assertTrue(is_valid_timestamp(fetched_credential.created_at))
+        self.assertTrue(is_valid_timestamp(fetched_credential.updated_at))
 
-        fetched_field_values = [
-            {
-                "fieldName": field["fieldName"],
-                "fieldValue": field["fieldValue"],
-                "fieldType": field["fieldType"],
-            }
-            for field in fetched_credential["fields"]
+        expected_fields = [
+            i
+            for i in created_credential.user_fields[0].fields
+            if i.field_type != "sensitive"
         ]
+        actual_fields = fetched_credential.user_fields[0].fields
 
-        for field in created_credential.user_fields[0].fields:
-            if field.field_type == "sensitive":
-                continue
-
-            expected_dict = {
-                "fieldType": field.field_type,
-                "fieldName": field.field_name,
-                "fieldValue": field.field_value,
-            }
-            self.assertIn(expected_dict, fetched_field_values)
+        self.assertCountEqual(expected_fields, actual_fields)
 
 
 class TestEditCredential(unittest.TestCase):
@@ -88,9 +75,14 @@ class TestEditCredential(unittest.TestCase):
             folder_id=folder_id, user=self.user
         )
 
-        share_credentials_with_user(
+        user_data_with_permission = {
+            "user_details": self.another_user,
+            "access_type": "write",
+        }
+
+        share_credentials_with_users(
             credential_ids=[self.created_credential.credential_id],
-            share_to_user=self.another_user,
+            share_to_users_with_permission=[user_data_with_permission],
             share_from_user=self.user,
         )
 
@@ -120,12 +112,12 @@ class TestEditCredential(unittest.TestCase):
             credential_id=self.created_credential.credential_id, user=self.user
         )
 
-        self.assertEqual(fetched_credential_details["name"], update_credential_name)
+        self.assertEqual(fetched_credential_details.name, update_credential_name)
         self.assertEqual(
-            fetched_credential_details["description"], update_credential_description
+            fetched_credential_details.description, update_credential_description
         )
         self.assertEqual(
-            fetched_credential_details["credentialType"], update_credential_type
+            fetched_credential_details.credential_type, update_credential_type
         )
 
         # Check values for shared used
@@ -134,14 +126,14 @@ class TestEditCredential(unittest.TestCase):
         )
 
         self.assertEqual(
-            fetched_credential_details_another_user["name"], update_credential_name
+            fetched_credential_details_another_user.name, update_credential_name
         )
         self.assertEqual(
-            fetched_credential_details_another_user["description"],
+            fetched_credential_details_another_user.description,
             update_credential_description,
         )
         self.assertEqual(
-            fetched_credential_details_another_user["credentialType"],
+            fetched_credential_details_another_user.credential_type,
             update_credential_type,
         )
 

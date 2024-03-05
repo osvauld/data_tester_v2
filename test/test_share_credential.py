@@ -63,7 +63,7 @@ class TestShareCredentialsWithUsers(unittest.TestCase):
             self.assertEqual(
                 credential.credential_type, fetched_credential.credential_type
             )
-            self.assertEqual("write", fetched_credential.access_type)
+            self.assertEqual(share_to["access_type"], fetched_credential.access_type)
 
             expected_fields = credential.user_fields[0].fields
             actual_fields = fetched_credential.user_fields[0].fields
@@ -163,10 +163,12 @@ class TestShareFolderWithUsers(unittest.TestCase):
             folder_id=folder_id, user=self.share_to_user
         )
 
-        expected_credential_ids = [credential_1.credential_id, credential_2.credential_id]
+        expected_credential_ids = [
+            credential_1.credential_id,
+            credential_2.credential_id,
+        ]
         actual_credential_ids = [
             credential["credentialId"] for credential in folder_credentials
         ]
 
         self.assertCountEqual(expected_credential_ids, actual_credential_ids)
-

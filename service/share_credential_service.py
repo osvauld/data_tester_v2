@@ -8,7 +8,7 @@ from api.share_credential_api import (share_credentials_for_users_api,
 from model.user import User
 from service.credential_service import get_credential_fields_by_ids
 from service.folder_service import credential_fields_for_folder_id
-from service.group_service import get_group_members
+from service.group_service import get_groups_members
 from utils.crypto import encrypt_text
 
 
@@ -123,7 +123,7 @@ def share_credentials_with_groups(
     group_ids = [
         share_to_group["group_id"] for share_to_group in share_to_groups_with_permission
     ]
-    group_members = get_group_members(group_ids=group_ids, user=share_from_user)
+    group_members = get_groups_members(group_ids=group_ids, user=share_from_user)
 
     group_member_map = {}
     for member in group_members:
@@ -191,7 +191,7 @@ def share_folder_with_groups(
     group_ids = [
         share_to_group["group_id"] for share_to_group in share_to_groups_with_permission
     ]
-    group_members = get_group_members(group_ids=group_ids, user=share_from_user)
+    group_members = get_groups_members(group_ids=group_ids, user=share_from_user)
 
     group_member_map = {}
     for member in group_members:

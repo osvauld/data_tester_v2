@@ -87,7 +87,7 @@ def add_member_to_group(group_id: uuid.UUID, new_member: User, caller: User):
     return response
 
 
-def get_group_members(group_ids: uuid.UUID, user: User):
+def get_groups_members(group_ids: uuid.UUID, user: User):
 
     response = get_groups_members_api(group_ids=group_ids, user=user)
     return response["data"]

@@ -1,8 +1,8 @@
 import uuid
 
-import settings
-
 import requests
+
+import settings
 from model.user import User
 from utils.api_validator import check_api_success
 

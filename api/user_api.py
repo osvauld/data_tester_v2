@@ -1,6 +1,6 @@
 import requests
-import settings
 
+import settings
 from utils.api_validator import check_api_success
 
 

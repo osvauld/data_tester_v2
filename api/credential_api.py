@@ -1,7 +1,6 @@
-import settings
-
 import requests
 
+import settings
 from model.credential import Credential
 from model.user import User
 from utils.api_validator import check_api_success

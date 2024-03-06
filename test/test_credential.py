@@ -1,18 +1,15 @@
 import unittest
 
-from factories.credential import FieldFactory
-from service.folder_service import create_random_folder
-from service.user_services import create_and_login_random_user
-from service.credential_service import (
-    create_random_credential,
-    get_credential_data,
-    get_credential_data_with_sensitive_fields,
-    edit_credential,
-)
-from service.share_credential_service import share_credentials_with_users
-from utils.test_utils import is_valid_uuid, is_valid_timestamp
-
 from faker import Faker
+
+from factories.credential import FieldFactory
+from service.credential_service import (
+    create_random_credential, edit_credential, get_credential_data,
+    get_credential_data_with_sensitive_fields)
+from service.folder_service import create_random_folder
+from service.share_credential_service import share_credentials_with_users
+from service.user_services import create_and_login_random_user
+from utils.test_utils import is_valid_timestamp, is_valid_uuid
 
 fake = Faker()
 

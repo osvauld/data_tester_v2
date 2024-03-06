@@ -1,10 +1,7 @@
-from service.user_services import (
-    create_random_user,
-    register_user,
-    login,
-    temp_login_user,
-)
 import unittest
+
+from service.user_services import (create_random_user, login, register_user,
+                                   temp_login_user)
 from utils.test_utils import is_valid_uuid
 
 

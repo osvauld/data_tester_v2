@@ -1,6 +1,5 @@
 import uuid
 
-
 from model.user import User
 
 

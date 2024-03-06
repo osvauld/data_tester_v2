@@ -1,7 +1,5 @@
 import uuid
 
-
-import uuid
 from dateutil.parser import parse
 
 

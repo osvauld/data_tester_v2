@@ -1,11 +1,9 @@
-from api.folder_api import (
-    create_folder_api,
-    get_users_with_folder_access_api,
-    get_credentials_fields_for_folder_api,
-    get_folder_credentials_api,
-)
-
 from faker import Faker
+
+from api.folder_api import (create_folder_api,
+                            get_credentials_fields_for_folder_api,
+                            get_folder_credentials_api,
+                            get_users_with_folder_access_api)
 
 fake = Faker()
 

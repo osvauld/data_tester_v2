@@ -1,24 +1,19 @@
 import uuid
-
-from model.user import User
-from model.credential import Field, UserFields, Credential
-
-from utils.crypto import encrypt_text
-
-from api.credential_api import (
-    create_credential_api,
-    get_credential_data_api,
-    get_credential_fields_by_ids_api,
-    get_sensitive_fields_by_id_api,
-    get_all_users_with_credential_access_api,
-    edit_credential_api,
-)
-from service.folder_service import get_users_with_folder_access
-
-from factories.credential import CredentialFactory, UserFieldsFactory, FieldFactory
 from copy import deepcopy
 
 import faker
+
+from api.credential_api import (create_credential_api, edit_credential_api,
+                                get_all_users_with_credential_access_api,
+                                get_credential_data_api,
+                                get_credential_fields_by_ids_api,
+                                get_sensitive_fields_by_id_api)
+from factories.credential import (CredentialFactory, FieldFactory,
+                                  UserFieldsFactory)
+from model.credential import Credential, Field, UserFields
+from model.user import User
+from service.folder_service import get_users_with_folder_access
+from utils.crypto import encrypt_text
 
 fake = faker.Faker()
 

@@ -1,8 +1,9 @@
-from model.credential import Credential, Field, UserFields
-from factories.user import UserFactory
+import uuid
+
 import factory
 
-import uuid
+from factories.user import UserFactory
+from model.credential import Credential, Field, UserFields
 
 
 class FieldFactory(factory.Factory):

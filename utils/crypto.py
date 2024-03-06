@@ -1,11 +1,10 @@
-import tempfile
+import base64
 import shutil
-
-import jwt
-from jwt.exceptions import DecodeError, ExpiredSignatureError
+import tempfile
 
 import gnupg
-import base64
+import jwt
+from jwt.exceptions import DecodeError, ExpiredSignatureError
 
 GPG_PASSPHRASE = "passphrase"
 

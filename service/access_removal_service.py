@@ -1,7 +1,7 @@
 import uuid
 
-from model.user import User
 from api.remove_access_api import remove_user_access_for_credential_api
+from model.user import User
 
 
 def remove_user_access_for_credential(

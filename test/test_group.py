@@ -1,7 +1,11 @@
 import unittest
 
-from service.group_service import (add_member_to_group, create_random_group,
-                                   get_users_without_group_access, get_groups_members)
+from service.group_service import (
+    add_member_to_group,
+    create_random_group,
+    get_users_without_group_access,
+    get_groups_members,
+)
 from service.user_services import create_and_login_random_user
 from utils.test_utils import is_valid_uuid
 
@@ -40,9 +44,7 @@ class TestGroup(unittest.TestCase):
 
         add_member_to_group(group_id=group_id, new_member=new_member, caller=self.user)
 
-        group_members = get_groups_members(
-            group_ids=[group_id], user=self.user
-        )
+        group_members = get_groups_members(group_ids=[group_id], user=self.user)
 
         user_ids = [user["id"] for user in group_members[0]["userDetails"]]
 

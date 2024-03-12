@@ -1,7 +1,11 @@
 import uuid
 
-from api.remove_access_api import remove_user_access_for_credential_api, remove_user_access_for_folder_api, \
-    remove_group_access_for_credential_api, remove_group_access_for_folder_api
+from api.remove_access_api import (
+    remove_user_access_for_credential_api,
+    remove_user_access_for_folder_api,
+    remove_group_access_for_credential_api,
+    remove_group_access_for_folder_api,
+)
 from model.user import User
 
 
@@ -18,6 +22,7 @@ def remove_user_access_for_credential(
     )
 
     return response
+
 
 def remove_user_access_for_folder(
     folder_id: uuid.UUID, remove_for_users: list[User], caller: User

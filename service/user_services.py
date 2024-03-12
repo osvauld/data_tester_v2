@@ -1,8 +1,12 @@
 from faker import Faker
 
-from api.user_api import (create_user_api, get_challenge_api,
-                          register_user_api, temp_login_user_api,
-                          verify_challenge_api)
+from api.user_api import (
+    create_user_api,
+    get_challenge_api,
+    register_user_api,
+    temp_login_user_api,
+    verify_challenge_api,
+)
 from model.user import User
 from utils.crypto import generate_device_key, sign_message
 

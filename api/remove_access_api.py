@@ -32,6 +32,7 @@ def remove_user_access_for_credential_api(
 
     return response_json
 
+
 def remove_user_access_for_folder_api(
     folder_id: uuid.UUID, remove_for_users: User, caller: User
 ):

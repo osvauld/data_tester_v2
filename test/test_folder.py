@@ -2,8 +2,7 @@ import unittest
 
 from faker import Faker
 
-from service.folder_service import (create_folder_service,
-                                    get_users_with_folder_access)
+from service.folder_service import create_folder_service, get_users_with_folder_access
 from service.user_services import create_and_login_random_user
 from utils.test_utils import is_valid_uuid
 

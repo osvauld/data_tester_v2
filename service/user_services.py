@@ -15,7 +15,7 @@ fake = Faker()
 
 def create_random_user():
     name = fake.name()
-    username = fake.user_name()
+    username = fake.unique.user_name()
     password = fake.password()
 
     response = create_user_api(

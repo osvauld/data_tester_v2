@@ -30,7 +30,7 @@ class Field:
     @classmethod
     def from_dict(cls, field_dict):
         return cls(
-            field_id=field_dict["id"],
+            field_id=field_dict["fieldId"],
             field_name=field_dict["fieldName"],
             field_value=field_dict["fieldValue"],
             field_type=field_dict["fieldType"],

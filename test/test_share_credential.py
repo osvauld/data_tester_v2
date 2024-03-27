@@ -4,14 +4,18 @@ import unittest
 from faker import Faker
 
 from service.credential_service import (
-    create_random_credential, get_credential_data,
-    get_credential_data_with_sensitive_fields)
+    create_random_credential,
+    get_credential_data,
+    get_credential_data_with_sensitive_fields,
+)
 from service.folder_service import create_random_folder, get_folder_credentials
 from service.group_service import add_member_to_group, create_random_group
-from service.share_credential_service import (share_credentials_with_groups,
-                                              share_credentials_with_users,
-                                              share_folder_with_groups,
-                                              share_folder_with_users)
+from service.share_credential_service import (
+    share_credentials_with_groups,
+    share_credentials_with_users,
+    share_folder_with_groups,
+    share_folder_with_users,
+)
 from service.user_services import create_and_login_random_user
 
 fake = Faker()

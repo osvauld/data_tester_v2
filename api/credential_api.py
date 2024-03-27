@@ -99,7 +99,7 @@ def get_sensitive_fields_by_id_api(credential_id: str, user: User):
 
 
 def get_all_users_with_credential_access_api(credential_id: str, user: User):
-    api_url = f"{settings.API_BASE_URL}/credential/{credential_id}/users"
+    api_url = f"{settings.API_BASE_URL}/credential/{credential_id}/users-data-sync"
 
     headers = {
         "Authorization": f"Bearer {user.token}",
@@ -112,7 +112,7 @@ def get_all_users_with_credential_access_api(credential_id: str, user: User):
     if not check_api_success(response_json):
         raise ValueError("API response is not successful")
 
-    return response.json()
+    return response_json
 
 
 def edit_credential_api(credential_id: str, user: User, payload: dict):

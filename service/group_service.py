@@ -75,7 +75,7 @@ def add_member_to_group(group_id: uuid.UUID, new_member: User, caller: User):
     payload = {
         "groupId": group_id,
         "memberId": new_member.user_id,
-        "memberRole": random.choice(["member", "manager"]),
+        "memberRole": random.choice(["member", "admin"]),
         "credentials": all_credentials,
     }
 

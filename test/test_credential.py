@@ -46,7 +46,7 @@ class TestCredential(unittest.TestCase):
         self.assertEqual(
             created_credential.credential_type, fetched_credential.credential_type
         )
-        self.assertEqual("owner", fetched_credential.access_type)
+        self.assertEqual("manager", fetched_credential.access_type)
         self.assertEqual(self.user.user_id, fetched_credential.created_by)
         self.assertTrue(is_valid_timestamp(fetched_credential.created_at))
         self.assertTrue(is_valid_timestamp(fetched_credential.updated_at))
@@ -74,7 +74,7 @@ class TestEditCredential(unittest.TestCase):
 
         user_data_with_permission = {
             "user_details": self.another_user,
-            "access_type": "write",
+            "access_type": "manager",
         }
 
         share_credentials_with_users(

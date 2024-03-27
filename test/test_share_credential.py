@@ -41,7 +41,7 @@ class TestShareCredentialsWithUsers(unittest.TestCase):
 
         share_to = {
             "user_details": self.share_to_user,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
 
         _response = share_credentials_with_users(
@@ -90,7 +90,7 @@ class TestShareCredentialsWithUsers(unittest.TestCase):
             share_to_users_with_permission.append(
                 {
                     "user_details": share_to_user,
-                    "access_type": random.choice(["read", "write", "owner"]),
+                    "access_type": random.choice(["reader", "manager"]),
                 }
             )
 
@@ -148,7 +148,7 @@ class TestShareFolderWithUsers(unittest.TestCase):
         share_to_users = [
             {
                 "user_details": self.share_to_user,
-                "access_type": random.choice(["read", "write", "owner"]),
+                "access_type": random.choice(["reader", "manager"]),
             }
         ]
         response = share_folder_with_users(
@@ -198,7 +198,7 @@ class TestShareCredentialWithGroup(unittest.TestCase):
 
         share_to_group_with_permission = {
             "group_id": self.group,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
 
         response = share_credentials_with_groups(
@@ -254,7 +254,7 @@ class TestShareFolderWithGroup(unittest.TestCase):
 
         share_to_group_with_permission = {
             "group_id": self.group,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
 
         response = share_folder_with_groups(

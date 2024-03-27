@@ -15,7 +15,7 @@ from utils.crypto import encrypt_text
 def share_credentials_with_users(
     credential_ids: list[uuid4],
     share_from_user: User,
-    share_to_users_with_permission: User,
+    share_to_users_with_permission,
 ):
 
     user_data = []

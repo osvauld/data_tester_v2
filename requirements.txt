@@ -1,4 +1,7 @@
+factory_boy==3.3.0
 Faker==22.7.0
-Requests==2.31.0
-black==24.1.1
+PyJWT==2.8.0
 python-dotenv==1.0.1
+python_dateutil==2.8.2
+python_gnupg==0.5.2
+Requests==2.31.0

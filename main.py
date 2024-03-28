@@ -1,10 +1,1 @@
-from scenario.user_scenario import create_user_scenario
-
-
-def main():
-    result = create_user_scenario()
-    print(result)
-
-
-if __name__ == "__main__":
-    main()
+import service.credential_service

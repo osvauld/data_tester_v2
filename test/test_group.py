@@ -1,11 +1,8 @@
 import unittest
 
-from service.group_service import (
-    add_member_to_group,
-    create_random_group,
-    get_users_without_group_access,
-    get_groups_members,
-)
+from service.group_service import (add_member_to_group, create_random_group,
+                                   get_groups_members,
+                                   get_users_without_group_access)
 from service.user_services import create_and_login_random_user
 from utils.test_utils import is_valid_uuid
 

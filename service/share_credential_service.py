@@ -1,12 +1,10 @@
 import uuid
 from uuid import uuid4
 
-from api.share_credential_api import (
-    share_credentials_for_users_api,
-    share_credentials_with_groups_api,
-    share_folder_with_groups_api,
-    share_folder_with_users_api,
-)
+from api.share_credential_api import (share_credentials_for_users_api,
+                                      share_credentials_with_groups_api,
+                                      share_folder_with_groups_api,
+                                      share_folder_with_users_api)
 from model.user import User
 from service.credential_service import get_credential_fields_by_ids
 from service.folder_service import credential_fields_for_folder_id
@@ -17,7 +15,7 @@ from utils.crypto import encrypt_text
 def share_credentials_with_users(
     credential_ids: list[uuid4],
     share_from_user: User,
-    share_to_users_with_permission: User,
+    share_to_users_with_permission,
 ):
 
     user_data = []

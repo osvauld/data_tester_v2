@@ -28,7 +28,7 @@ def create_folder_api(folder_name, description, user):
 
 
 def get_users_with_folder_access_api(folder_id, user):
-    api_url = f"{settings.API_BASE_URL}/folder/{folder_id}/users"
+    api_url = f"{settings.API_BASE_URL}/folder/{folder_id}/users-data-sync"
 
     headers = {
         "Authorization": f"Bearer {user.token}",

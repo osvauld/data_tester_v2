@@ -3,13 +3,10 @@ import uuid
 
 import faker
 
-from api.group_api import (
-    add_members_to_group_api,
-    create_group_api,
-    get_group_credential_fields_api,
-    get_groups_members_api,
-    get_users_without_group_access_api,
-)
+from api.group_api import (add_members_to_group_api, create_group_api,
+                           get_group_credential_fields_api,
+                           get_groups_members_api,
+                           get_users_without_group_access_api)
 from model.user import User
 from utils.crypto import encrypt_text
 
@@ -78,7 +75,7 @@ def add_member_to_group(group_id: uuid.UUID, new_member: User, caller: User):
     payload = {
         "groupId": group_id,
         "memberId": new_member.user_id,
-        "memberRole": random.choice(["member", "manager"]),
+        "memberRole": random.choice(["member", "admin"]),
         "credentials": all_credentials,
     }
 

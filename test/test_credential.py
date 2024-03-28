@@ -4,11 +4,8 @@ from faker import Faker
 
 from factories.credential import FieldFactory
 from service.credential_service import (
-    create_random_credential,
-    edit_credential,
-    get_credential_data,
-    get_credential_data_with_sensitive_fields,
-)
+    create_random_credential, edit_credential, get_credential_data,
+    get_credential_data_with_sensitive_fields)
 from service.folder_service import create_random_folder
 from service.share_credential_service import share_credentials_with_users
 from service.user_services import create_and_login_random_user
@@ -49,7 +46,7 @@ class TestCredential(unittest.TestCase):
         self.assertEqual(
             created_credential.credential_type, fetched_credential.credential_type
         )
-        self.assertEqual("owner", fetched_credential.access_type)
+        self.assertEqual("manager", fetched_credential.access_type)
         self.assertEqual(self.user.user_id, fetched_credential.created_by)
         self.assertTrue(is_valid_timestamp(fetched_credential.created_at))
         self.assertTrue(is_valid_timestamp(fetched_credential.updated_at))
@@ -77,7 +74,7 @@ class TestEditCredential(unittest.TestCase):
 
         user_data_with_permission = {
             "user_details": self.another_user,
-            "access_type": "write",
+            "access_type": "manager",
         }
 
         share_credentials_with_users(

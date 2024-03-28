@@ -4,18 +4,14 @@ import unittest
 from faker import Faker
 
 from service.credential_service import (
-    create_random_credential,
-    get_credential_data,
-    get_credential_data_with_sensitive_fields,
-)
+    create_random_credential, get_credential_data,
+    get_credential_data_with_sensitive_fields)
 from service.folder_service import create_random_folder, get_folder_credentials
 from service.group_service import add_member_to_group, create_random_group
-from service.share_credential_service import (
-    share_credentials_with_groups,
-    share_credentials_with_users,
-    share_folder_with_groups,
-    share_folder_with_users,
-)
+from service.share_credential_service import (share_credentials_with_groups,
+                                              share_credentials_with_users,
+                                              share_folder_with_groups,
+                                              share_folder_with_users)
 from service.user_services import create_and_login_random_user
 
 fake = Faker()
@@ -45,7 +41,7 @@ class TestShareCredentialsWithUsers(unittest.TestCase):
 
         share_to = {
             "user_details": self.share_to_user,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
 
         _response = share_credentials_with_users(
@@ -94,7 +90,7 @@ class TestShareCredentialsWithUsers(unittest.TestCase):
             share_to_users_with_permission.append(
                 {
                     "user_details": share_to_user,
-                    "access_type": random.choice(["read", "write", "owner"]),
+                    "access_type": random.choice(["reader", "manager"]),
                 }
             )
 
@@ -152,7 +148,7 @@ class TestShareFolderWithUsers(unittest.TestCase):
         share_to_users = [
             {
                 "user_details": self.share_to_user,
-                "access_type": random.choice(["read", "write", "owner"]),
+                "access_type": random.choice(["reader", "manager"]),
             }
         ]
         response = share_folder_with_users(
@@ -202,7 +198,7 @@ class TestShareCredentialWithGroup(unittest.TestCase):
 
         share_to_group_with_permission = {
             "group_id": self.group,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
 
         response = share_credentials_with_groups(
@@ -258,7 +254,7 @@ class TestShareFolderWithGroup(unittest.TestCase):
 
         share_to_group_with_permission = {
             "group_id": self.group,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
 
         response = share_folder_with_groups(

@@ -22,7 +22,7 @@ def create_group_api(payload, user):
 
 
 def get_users_without_group_access_api(group_id, user):
-    api_url = f"{settings.API_BASE_URL}/group/{group_id}/users/without-access"
+    api_url = f"{settings.API_BASE_URL}/groups/{group_id}/users/without-access"
 
     headers = {
         "Authorization": f"Bearer {user.token}",

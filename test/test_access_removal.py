@@ -1,21 +1,18 @@
 import random
 import unittest
 
-from service.access_removal_service import (
-    remove_user_access_for_credential,
-    remove_user_access_for_folder,
-    remove_group_access_for_credential,
-    remove_group_access_for_folder,
-)
-from service.credential_service import create_random_credential, get_credential_data
+from service.access_removal_service import (remove_group_access_for_credential,
+                                            remove_group_access_for_folder,
+                                            remove_user_access_for_credential,
+                                            remove_user_access_for_folder)
+from service.credential_service import (create_random_credential,
+                                        get_credential_data)
 from service.folder_service import create_random_folder
-from service.group_service import create_random_group, add_member_to_group
-from service.share_credential_service import (
-    share_credentials_with_users,
-    share_folder_with_users,
-    share_credentials_with_groups,
-    share_folder_with_groups,
-)
+from service.group_service import add_member_to_group, create_random_group
+from service.share_credential_service import (share_credentials_with_groups,
+                                              share_credentials_with_users,
+                                              share_folder_with_groups,
+                                              share_folder_with_users)
 from service.user_services import create_and_login_random_user
 
 
@@ -35,7 +32,7 @@ class TestCredentialAccessRemovalForUser(unittest.TestCase):
 
         share_to_user = {
             "user_details": self.share_to_user,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
         response = share_credentials_with_users(
             credential_ids=[self.credential.credential_id],
@@ -77,7 +74,7 @@ class TestCredentialAccessRemovalForUser(unittest.TestCase):
 
         share_credential_to_user = {
             "user_details": self.share_to_user,
-            "access_type": "write",
+            "access_type": "manager",
         }
 
         # share credential with user
@@ -91,7 +88,7 @@ class TestCredentialAccessRemovalForUser(unittest.TestCase):
 
         share_folder_to_user = {
             "user_details": self.share_to_user,
-            "access_type": "read",
+            "access_type": "reader",
         }
 
         # share folder with user
@@ -108,7 +105,7 @@ class TestCredentialAccessRemovalForUser(unittest.TestCase):
         )
 
         # should have the highest access
-        self.assertEqual(fetched_credential.access_type, "write")
+        self.assertEqual(fetched_credential.access_type, "manager")
 
         # Remove credential access for the shared user
         response = remove_user_access_for_credential(
@@ -124,7 +121,7 @@ class TestCredentialAccessRemovalForUser(unittest.TestCase):
         )
 
         # should have the next highest access
-        self.assertEqual(fetched_credential_again.access_type, "read")
+        self.assertEqual(fetched_credential_again.access_type, "reader")
 
 
 class TestFolderAccessRemovalForUser(unittest.TestCase):
@@ -146,7 +143,7 @@ class TestFolderAccessRemovalForUser(unittest.TestCase):
 
         share_to_user = {
             "user_details": self.share_to_user,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
         response = share_folder_with_users(
             folder_id=self.folder_id,
@@ -167,7 +164,7 @@ class TestFolderAccessRemovalForUser(unittest.TestCase):
 
         with self.assertRaises(Exception) as exc:
             get_credential_data(
-                credential_id=self.credentials[0], user=self.share_to_user
+                credential_id=self.credentials[0].credential_id, user=self.share_to_user
             )
 
         # check the exception is an HTTPError with status code 401
@@ -177,7 +174,7 @@ class TestFolderAccessRemovalForUser(unittest.TestCase):
 
         share_credential_to_user = {
             "user_details": self.share_to_user,
-            "access_type": "read",
+            "access_type": "reader",
         }
 
         # share credential with user
@@ -192,7 +189,7 @@ class TestFolderAccessRemovalForUser(unittest.TestCase):
 
         share_folder_to_user = {
             "user_details": self.share_to_user,
-            "access_type": "write",
+            "access_type": "manager",
         }
 
         # share folder with user
@@ -209,7 +206,7 @@ class TestFolderAccessRemovalForUser(unittest.TestCase):
         )
 
         # should have the highest access
-        self.assertEqual(fetched_credential.access_type, "write")
+        self.assertEqual(fetched_credential.access_type, "manager")
 
         # Remove credential access for the shared user
         response = remove_user_access_for_folder(
@@ -225,7 +222,7 @@ class TestFolderAccessRemovalForUser(unittest.TestCase):
         )
 
         # should have the next highest access
-        self.assertEqual(fetched_credential_again.access_type, "read")
+        self.assertEqual(fetched_credential_again.access_type, "reader")
 
 
 class TestCredentialAccessRemovalForGroup(unittest.TestCase):
@@ -250,7 +247,7 @@ class TestCredentialAccessRemovalForGroup(unittest.TestCase):
     def test_access_removal(self):
         share_to_group_with_permission = {
             "group_id": self.group_id,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
         response = share_credentials_with_groups(
             credential_ids=[self.credential.credential_id],
@@ -291,7 +288,7 @@ class TestCredentialAccessRemovalForGroup(unittest.TestCase):
     def test_access_removal_with_multiple_access(self):
         share_credential_to_group = {
             "group_id": self.group_id,
-            "access_type": "write",
+            "access_type": "manager",
         }
 
         # share credential with user
@@ -314,7 +311,7 @@ class TestCredentialAccessRemovalForGroup(unittest.TestCase):
 
         share_folder_to_group = {
             "group_id": self.group_id,
-            "access_type": "read",
+            "access_type": "reader",
         }
 
         # share folder with user
@@ -331,7 +328,7 @@ class TestCredentialAccessRemovalForGroup(unittest.TestCase):
         )
 
         # should have the highest access
-        self.assertEqual(fetched_credential.access_type, "write")
+        self.assertEqual(fetched_credential.access_type, "manager")
 
         # Remove credential access for the shared user
         response = remove_group_access_for_credential(
@@ -347,7 +344,7 @@ class TestCredentialAccessRemovalForGroup(unittest.TestCase):
         )
 
         # should have the next highest access
-        self.assertEqual(fetched_credential_again.access_type, "read")
+        self.assertEqual(fetched_credential_again.access_type, "reader")
 
 
 class TestFolderAccessRemovalForGroup(unittest.TestCase):
@@ -375,7 +372,7 @@ class TestFolderAccessRemovalForGroup(unittest.TestCase):
     def test_access_removal(self):
         share_to_group_with_permission = {
             "group_id": self.group_id,
-            "access_type": random.choice(["read", "write", "owner"]),
+            "access_type": random.choice(["reader", "manager"]),
         }
         response = share_folder_with_groups(
             folder_id=self.folder_id,
@@ -407,7 +404,7 @@ class TestFolderAccessRemovalForGroup(unittest.TestCase):
 
         with self.assertRaises(Exception) as exc:
             get_credential_data(
-                credential_id=self.credentials[0], user=self.share_to_user
+                credential_id=self.credentials[0].credential_id, user=self.share_to_user
             )
 
         # check the exception is an HTTPError with status code 401
@@ -416,7 +413,7 @@ class TestFolderAccessRemovalForGroup(unittest.TestCase):
     def test_access_removal_with_multiple_access(self):
         share_credential_to_group = {
             "group_id": self.group_id,
-            "access_type": "read",
+            "access_type": "reader",
         }
 
         # share credential with user
@@ -431,7 +428,7 @@ class TestFolderAccessRemovalForGroup(unittest.TestCase):
 
         share_folder_to_group = {
             "group_id": self.group_id,
-            "access_type": "write",
+            "access_type": "manager",
         }
 
         # share folder with user
@@ -449,7 +446,7 @@ class TestFolderAccessRemovalForGroup(unittest.TestCase):
         )
 
         # should have the highest access
-        self.assertEqual(fetched_credential.access_type, "write")
+        self.assertEqual(fetched_credential.access_type, "manager")
 
         # Remove credential access for the shared user
         response = remove_group_access_for_folder(
@@ -465,4 +462,4 @@ class TestFolderAccessRemovalForGroup(unittest.TestCase):
         )
 
         # should have the next highest access
-        self.assertEqual(fetched_credential_again.access_type, "read")
+        self.assertEqual(fetched_credential_again.access_type, "reader")

@@ -20,14 +20,13 @@ class TestGetCredentialAccess(TestCase):
 
     def test_direct_acquired_access(self):
 
-        share_to_users = [
-            create_and_login_random_user() for _ in range(3)
-        ]
+        share_to_users = [create_and_login_random_user() for _ in range(3)]
 
         share_credentials_with_users(
             credential_ids=[self.created_credential.credential_id],
             share_to_users_with_permission=[
-                {"user_details": user, "access_type": "manager"} for user in share_to_users
+                {"user_details": user, "access_type": "manager"}
+                for user in share_to_users
             ],
             share_from_user=self.user,
         )
@@ -36,9 +35,10 @@ class TestGetCredentialAccess(TestCase):
             credential_id=self.created_credential.credential_id, user=self.user
         )
 
-        share_to_user_ids = [user.user_id for user in share_to_users] + [self.user.user_id]
+        share_to_user_ids = [user.user_id for user in share_to_users] + [
+            self.user.user_id
+        ]
         for user in fetched_users:
             self.assertIn(user["id"], share_to_user_ids)
             self.assertEqual("manager", user["accessType"])
             self.assertEqual("acquired", user["accessSource"])
-

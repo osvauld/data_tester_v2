@@ -3,15 +3,13 @@ from copy import deepcopy
 
 import faker
 
-from api.credential_api import (
-    create_credential_api,
-    edit_credential_api,
-    get_all_users_with_credential_access_api,
-    get_credential_data_api,
-    get_credential_fields_by_ids_api,
-    get_sensitive_fields_by_id_api,
-)
-from factories.credential import CredentialFactory, FieldFactory, UserFieldsFactory
+from api.credential_api import (create_credential_api, edit_credential_api,
+                                get_all_users_with_credential_access_api,
+                                get_credential_data_api,
+                                get_credential_fields_by_ids_api,
+                                get_sensitive_fields_by_id_api)
+from factories.credential import (CredentialFactory, FieldFactory,
+                                  UserFieldsFactory)
 from model.credential import Credential, Field, UserFields
 from model.user import User
 from service.folder_service import get_users_with_folder_access

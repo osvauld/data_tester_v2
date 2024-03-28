@@ -1,6 +1,6 @@
-import settings
 import requests
 
+import settings
 from model.user import User
 from utils.api_validator import check_api_success
 
@@ -21,4 +21,3 @@ def get_users_with_direct_access_api(credential_id: str, user: User):
         raise ValueError("API response is not successful")
 
     return response.json()
-

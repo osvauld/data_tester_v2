@@ -1,21 +1,18 @@
 import random
 import unittest
 
-from service.access_removal_service import (
-    remove_user_access_for_credential,
-    remove_user_access_for_folder,
-    remove_group_access_for_credential,
-    remove_group_access_for_folder,
-)
-from service.credential_service import create_random_credential, get_credential_data
+from service.access_removal_service import (remove_group_access_for_credential,
+                                            remove_group_access_for_folder,
+                                            remove_user_access_for_credential,
+                                            remove_user_access_for_folder)
+from service.credential_service import (create_random_credential,
+                                        get_credential_data)
 from service.folder_service import create_random_folder
-from service.group_service import create_random_group, add_member_to_group
-from service.share_credential_service import (
-    share_credentials_with_users,
-    share_folder_with_users,
-    share_credentials_with_groups,
-    share_folder_with_groups,
-)
+from service.group_service import add_member_to_group, create_random_group
+from service.share_credential_service import (share_credentials_with_groups,
+                                              share_credentials_with_users,
+                                              share_folder_with_groups,
+                                              share_folder_with_users)
 from service.user_services import create_and_login_random_user
 
 

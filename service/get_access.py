@@ -10,4 +10,3 @@ def get_users_with_direct_access(credential_id: str, user: User):
     )
 
     return response["data"]
-

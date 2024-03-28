@@ -3,13 +3,10 @@ import uuid
 
 import faker
 
-from api.group_api import (
-    add_members_to_group_api,
-    create_group_api,
-    get_group_credential_fields_api,
-    get_groups_members_api,
-    get_users_without_group_access_api,
-)
+from api.group_api import (add_members_to_group_api, create_group_api,
+                           get_group_credential_fields_api,
+                           get_groups_members_api,
+                           get_users_without_group_access_api)
 from model.user import User
 from utils.crypto import encrypt_text
 

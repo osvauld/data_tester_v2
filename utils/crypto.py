@@ -85,6 +85,3 @@ def encrypt_text(text: str, public_key: str):
     # TODO: add encryption
 
     return text
-
-
-generate_device_key()

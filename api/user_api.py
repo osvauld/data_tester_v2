@@ -4,16 +4,21 @@ import settings
 from utils.api_validator import check_api_success
 
 
-def create_user_api(name, username, temp_password):
+def create_user_api(name, username, temp_password, admin_token):
     api_url = f"{settings.API_BASE_URL}/user"
 
     payload = {
         "name": name,
         "username": username,
         "tempPassword": temp_password,
+        "type": "admin",
     }
 
-    response = requests.post(api_url, json=payload)
+    headers = {
+        "Authorization": f"Bearer {admin_token}",
+    }
+
+    response = requests.post(api_url, json=payload, headers=headers)
     response.raise_for_status()
 
     response_json = response.json()

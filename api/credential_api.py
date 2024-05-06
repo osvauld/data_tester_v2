@@ -1,14 +1,18 @@
+import base64
+import hashlib
+import json
+
 import requests
 
 import settings
 from model.credential import Credential
 from model.user import User
 from utils.api_validator import check_api_success
+from utils.crypto import hash_and_sign
 
 
 def create_credential_api(credential: Credential, user: User):
     api_url = f"{settings.API_BASE_URL}/credential"
-
     payload = {
         "name": credential.name,
         "description": credential.description,
@@ -32,16 +36,17 @@ def create_credential_api(credential: Credential, user: User):
             }
         )
 
+    # Serialize payload consistently with JavaScript's JSON.stringify
+    signature = hash_and_sign(payload, user.device_private_key)
+
     headers = {
         "Authorization": f"Bearer {user.token}",
+        "Signature": signature,
+        "Content-Type": "application/json",
     }
 
     response = requests.post(api_url, json=payload, headers=headers)
     response.raise_for_status()
-
-    response_json = response.json()
-    if not check_api_success(response_json):
-        raise ValueError("API response is not successful")
 
     return response.json()
 
@@ -117,11 +122,13 @@ def get_all_users_with_credential_access_api(credential_id: str, user: User):
 
 def edit_credential_api(credential_id: str, user: User, payload: dict):
     api_url = f"{settings.API_BASE_URL}/credential/{credential_id}"
+    signature = hash_and_sign(payload, user.device_private_key)
 
     headers = {
         "Authorization": f"Bearer {user.token}",
+        "Signature": signature,
+        "Content-Type": "application/json",
     }
-
     response = requests.put(api_url, json=payload, headers=headers)
     response.raise_for_status()
 

@@ -2,6 +2,7 @@ import requests
 
 import settings
 from utils.api_validator import check_api_success
+from utils.crypto import hash_and_sign
 
 
 def create_user_api(name, username, temp_password, admin_token):
@@ -14,8 +15,11 @@ def create_user_api(name, username, temp_password, admin_token):
         "type": "admin",
     }
 
+    signature = hash_and_sign(payload, settings.ADMIN_DEVICE_PRIVATE_KEY)
     headers = {
         "Authorization": f"Bearer {admin_token}",
+        "Signature": signature,
+        "Content-Type": "application/json",
     }
 
     response = requests.post(api_url, json=payload, headers=headers)

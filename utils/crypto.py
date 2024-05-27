@@ -1,4 +1,6 @@
 import base64
+import hashlib
+import json
 import shutil
 import tempfile
 
@@ -85,3 +87,16 @@ def encrypt_text(text: str, public_key: str):
     # TODO: add encryption
 
     return text
+
+
+def hash_and_sign(json_data, private_key):
+
+    payload_string = json.dumps(json_data)
+    encoded_payload = base64.b64encode(payload_string.encode("utf-8")).decode("utf-8")
+    hash_object = hashlib.sha512(encoded_payload.encode("utf-8"))
+    hashed_payload = base64.b64encode(hash_object.digest()).decode("utf-8")
+    signature = sign_message(private_key, hashed_payload)
+    return signature
+
+
+generate_device_key()

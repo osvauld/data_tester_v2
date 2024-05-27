@@ -1,9 +1,13 @@
 from faker import Faker
 
 import settings
-from api.user_api import (create_user_api, get_challenge_api,
-                          register_user_api, temp_login_user_api,
-                          verify_challenge_api)
+from api.user_api import (
+    create_user_api,
+    get_challenge_api,
+    register_user_api,
+    temp_login_user_api,
+    verify_challenge_api,
+)
 from model.user import User
 from utils.crypto import generate_device_key, sign_message
 
@@ -19,7 +23,10 @@ def create_random_user():
     password = fake.password()
 
     response = create_user_api(
-        name=name, username=username, temp_password=password, admin_token=admin_token
+        name=name,
+        username=username,
+        temp_password=password,
+        admin_token=admin_token,
     )
     user_id = response["data"]
     user = User(

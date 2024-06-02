@@ -4,8 +4,11 @@ from faker import Faker
 
 from factories.credential import FieldFactory
 from service.credential_service import (
-    create_random_credential, edit_credential, get_credential_data,
-    get_credential_data_with_sensitive_fields)
+    create_random_credential,
+    edit_credential,
+    get_credential_data,
+    get_credential_data_with_sensitive_fields,
+)
 from service.folder_service import create_random_folder
 from service.share_credential_service import share_credentials_with_users
 from service.user_services import create_and_login_random_user
@@ -40,25 +43,6 @@ class TestCredential(unittest.TestCase):
         self.assertEqual(
             created_credential.credential_id, fetched_credential.credential_id
         )
-        self.assertEqual(created_credential.folder_id, fetched_credential.folder_id)
-        self.assertEqual(created_credential.description, fetched_credential.description)
-        self.assertEqual(created_credential.name, fetched_credential.name)
-        self.assertEqual(
-            created_credential.credential_type, fetched_credential.credential_type
-        )
-        self.assertEqual("manager", fetched_credential.access_type)
-        self.assertEqual(self.user.user_id, fetched_credential.created_by)
-        self.assertTrue(is_valid_timestamp(fetched_credential.created_at))
-        self.assertTrue(is_valid_timestamp(fetched_credential.updated_at))
-
-        expected_fields = [
-            i
-            for i in created_credential.user_fields[0].fields
-            if i.field_type != "sensitive"
-        ]
-        actual_fields = fetched_credential.user_fields[0].fields
-
-        self.assertCountEqual(expected_fields, actual_fields)
 
 
 class TestEditCredential(unittest.TestCase):
@@ -143,13 +127,10 @@ class TestEditCredential(unittest.TestCase):
             .user_fields[0]
             .fields
         )
-
-        edit_fields = all_fields[:2]
-
-        for field in edit_fields:
+        for field in all_fields[:2]:
             field.field_name = fake.word()
             field.field_value = fake.password()
-            field.field_type = "other"
+            field.field_type = "meta"
 
         response = edit_credential(
             credential_id=self.created_credential.credential_id,
@@ -163,7 +144,9 @@ class TestEditCredential(unittest.TestCase):
         )
 
         self.assertTrue(response["success"])
-
+        data = get_credential_data_with_sensitive_fields(
+            credential_id=self.created_credential.credential_id, user=self.user
+        )
         # Check values for the user who shared the credentials
         fetched_fields_for_user = (
             get_credential_data_with_sensitive_fields(

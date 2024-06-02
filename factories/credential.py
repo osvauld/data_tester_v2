@@ -13,9 +13,7 @@ class FieldFactory(factory.Factory):
     field_id = uuid.UUID("00000000-0000-0000-0000-000000000000")
     field_name = factory.Faker("word")
     field_value = factory.Faker("password")
-    field_type = factory.Faker(
-        "random_element", elements=["sensitive", "non-sensitive"]
-    )
+    field_type = factory.Faker("random_element", elements=["sensitive", "meta"])
 
 
 class UserFieldsFactory(factory.Factory):
